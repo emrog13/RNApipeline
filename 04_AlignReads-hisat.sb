@@ -1,0 +1,62 @@
+#!/bin/bash -login
+
+#SBATCH --time=36:00:00
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=10
+#SBATCH --mem=64G
+#SBATCH --job-name 4hisat
+
+cd ${SLURM_SUBMIT_DIR}
+cores=$SLURM_CPUS_PER_TASK
+RAM=$SLURM_MEM_PER_NODE
+
+echo -e "RNA pipeline
+email: roggenk4[at]msu[dot]edu\n"
+
+source ../config.yaml
+
+echo -e "\n========== Sub-directories ==========\n"
+if [ -d $project_dir/outputs/04_AlignReads-hisat/ ]; then
+	echo -e "\n Directory exist! I performed this step already. Exiting... \n"
+else	
+	echo "mkdir $project_dir/outputs/04_AlignReads-hisat/"; mkdir $project_dir/outputs/04_AlignReads-hisat/
+	echo "cd $project_dir/outputs/03_primerStrip_cutadapt"; cd $project_dir/outputs/03_primerStrip_cutadapt/
+	
+	echo -e "\n========== Read alignment ==========\n"
+
+		conda activate RNApipeline
+		echo "hisat version: `hisat2 --version`"
+
+	if [[ "$hisat_index" == "yes" ]]
+		then 
+			echo -e "Building the reference index"
+			hisat2-build $genome B73_index
+	else
+		echo -e "hisat index already built"
+		fi
+
+
+	for i in *_R1.fastq; do
+  	SAMPLE=$(echo ${i} | sed "s/_R1\.fastq//") 
+ 	echo ${SAMPLE}_R1.fastq ${SAMPLE}_R2.fastq
+
+			hisat2 \
+				--max-intronlen 30000 \
+				--summary-file ${SAMPLE}.txt \
+				-p $cores \
+				--rna-strandness RF \
+				-x $project_dir/B73/B73_index \
+				-1 ${SAMPLE}_R1.fastq \
+				-2 ${SAMPLE}_R2.fastq \
+				-S ${SAMPLE}.sam
+				done
+				conda deactivate
+
+		fi
+
+echo -e "\n========= Sbatch log =========\n"
+echo -e "\n Current directory: `pwd` \n"
+echo -e "\n `sacct -u $MSUusername -j $SLURM_JOB_ID --format=JobID,JobName,Start,End,Elapsed,NCPUS,ReqMem` \n"
+scontrol show job $SLURM_JOB_ID
+mv $project_dir/code/slurm-$SLURM_JOB_ID* $project_dir/slurms/04_AlignReads-hisat.slurm

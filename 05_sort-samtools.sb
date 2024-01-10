@@ -1,0 +1,51 @@
+#!/bin/bash -login
+
+#SBATCH --time=24:00:00
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=32
+#SBATCH --mem=32G
+#SBATCH --job-name 4samtools
+
+cd ${SLURM_SUBMIT_DIR}
+cores=$SLURM_CPUS_PER_TASK
+RAM=$SLURM_MEM_PER_NODE
+
+echo -e "RNA pipeline
+email: roggenk4[at]msu[dot]edu\n"
+
+source ../config.yaml
+
+echo -e "\n========== Sub-directories ==========\n"
+if [ -d $project_dir/outputs/05_sort_samtools/ ]; then
+	echo -e "\n Directory exist! I performed this step already. Exiting... \n"
+else	
+	echo "mkdir $project_dir/outputs/05_sort_samtools/"; mkdir $project_dir/outputs/05_sort_samtools/
+	echo "cd $project_dir/outputs/04_AlignReads-hisat"; cd $project_dir/outputs/04_AlignReads-hisat/
+	
+	echo -e "\n========== samtools sort and index ==========\n"
+
+		conda activate RNApipeline
+		echo "samtools version: `samtools --version`"	
+
+		for file in *.sam; do
+			samtools view -S -b -F 4 -@ $cores $file.sam > $file_map.bam
+		done
+		for file in *.bam; do
+			samtools sort -@ $cores -o $project_dir/outputs/05_sort_samtools/$file_csort.bam $file.bam 
+		done
+		
+	echo "cd $project_dir/outputs/05_sort_samtools"; cd $project_dir/outputs/05_sort_samtools/
+		
+		for file in *.bam; do
+			samtools index -@ $cores $file
+		done
+		conda deactivate
+
+		fi
+
+echo -e "\n========= Sbatch log =========\n"
+echo -e "\n Current directory: `pwd` \n"
+echo -e "\n `sacct -u $MSUusername -j $SLURM_JOB_ID --format=JobID,JobName,Start,End,Elapsed,NCPUS,ReqMem` \n"
+scontrol show job $SLURM_JOB_ID
+mv $project_dir/code/slurm-$SLURM_JOB_ID* $project_dir/slurms/05_sort_samtools.slurm
