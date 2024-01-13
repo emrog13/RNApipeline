@@ -1,0 +1,23 @@
+#************************** RNA pipeline config file **************************#
+#*********************** email: roggenk4[at]msu[dot]edu ***********************#
+
+echo "===> Reading the config.yaml file"
+
+#************* ALL THE FIELDS BELOW MUST BE SELECTED BY THE USER *************#
+#=============================================================================#
+project_dir="/mnt/scratch/roggenk4/RNApipeline"
+
+# Change your MSUusername based on MSU ID 
+MSUusername="roggenk4"
+
+# Genome and annotation for alignment and gene counts
+
+genome=/mnt/scratch/roggenk4/RNApipeline/B73/Zm-B73-NAM-5.0.fa
+gtf=/mnt/scratch/roggenk4/RNApipeline/B73/Zm-B73-NAM-5.0.57.gtf
+
+# These are the main run-related parameters - very important!
+# For details about these parameters, refer to the README.md file.
+hisat_index=yes
+
+#****************************** END OF USER INPUT **************************#
+#===========================================================================#
