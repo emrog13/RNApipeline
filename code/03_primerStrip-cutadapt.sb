@@ -1,0 +1,56 @@
+#!/bin/bash -login
+
+#SBATCH --time=12:00:00
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=32
+#SBATCH --mem=64G
+#SBATCH --job-name 3cutadapt
+
+cd ${SLURM_SUBMIT_DIR}
+cores=$SLURM_CPUS_PER_TASK
+RAM=$SLURM_MEM_PER_NODE
+
+echo -e "RNA pipeline
+email: roggenk4[at]msu[dot]edu\n"
+
+source ../config.yaml
+
+echo -e "\n========== Sub-directories ==========\n"
+if [ -d $project_dir/outputs/03_primerStrip_cutadapt/ ]; then
+	echo -e "\n Directory exist! I performed this step already. Exiting... \n"
+else	
+	echo "mkdir $project_dir/outputs/03_primerStrip_cutadapt/"; mkdir $project_dir/outputs/03_primerStrip_cutadapt/
+	echo "cd $project_dir/rawdata/"; cd $project_dir/rawdata/
+	
+	echo -e "\n========== Primer stripping... ==========\n"
+
+		conda activate RNApipeline
+		echo "cutadapt version: `cutadapt --version`"	
+
+		for i in *_R1.fastq; do
+  			SAMPLE=$(echo ${i} | sed "s/_R1\.fastq//") 
+  			echo ${SAMPLE}_R1.fastq ${SAMPLE}_R2.fastq
+  			cutadapt \
+				-j $cores \
+				--nextseq-trim=20 \
+				--trim-n \
+				-m 25 \
+				-n 3 \
+				-a AGATCGGAAGAGCACACGTCTGAACTCCAGTCA \
+				-A AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT \
+				-o $project_dir/outputs/03_primerStrip_cutadapt/${SAMPLE}_trim_R1.fastq \
+				-p $project_dir/outputs/03_primerStrip_cutadapt/${SAMPLE}_trim_R2.fastq \
+				${SAMPLE}_R1.fastq  ${SAMPLE}_R2.fastq 
+
+				done
+				conda deactivate
+
+		fi
+
+
+echo -e "\n========= Sbatch log =========\n"
+echo -e "\n Current directory: `pwd` \n"
+echo -e "\n `sacct -u $MSUusername -j $SLURM_JOB_ID --format=JobID,JobName,Start,End,Elapsed,NCPUS,ReqMem` \n"
+scontrol show job $SLURM_JOB_ID
+mv $project_dir/code/slurm-$SLURM_JOB_ID* $project_dir/slurms/03_primerStrip_cutadapt.slurm

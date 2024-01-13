@@ -1,0 +1,52 @@
+#!/bin/bash -login
+
+#SBATCH --time=36:00:00
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=32
+#SBATCH --mem=32G
+#SBATCH --job-name 6htseq
+
+cd ${SLURM_SUBMIT_DIR}
+cores=$SLURM_CPUS_PER_TASK
+RAM=$SLURM_MEM_PER_NODE
+
+echo -e "RNA pipeline
+email: roggenk4[at]msu[dot]edu\n"
+
+source ../config.yaml
+
+echo -e "\n========== Sub-directories ==========\n"
+if [ -d $project_dir/outputs/06_count_htseq/ ]; then
+	echo -e "\n Directory exist! I performed this step already. Exiting... \n"
+else	
+	echo "mkdir $project_dir/outputs/06_count_htseq/"; mkdir $project_dir/outputs/06_count_htseq/
+	echo "cd $project_dir/outputs/05_sort_samtools"; cd $project_dir/outputs/05_sort_samtools/
+	
+	echo -e "\n========== Gene counts ==========\n"
+
+		conda activate RNApipeline
+		echo "htseq-count version: `htseq-count --version`"	
+
+		for i in *.bam; do
+		SAMPLE=$(echo ${i} | sed "s/_csort\.bam//")
+		htseq-count \
+			-f bam \
+			-r pos \
+			-i gene_id \ 
+			-s reverse \
+			-a 20 \
+			-t gene \ 
+			-n $cores \
+			-c $project_dir/ouputs/06_count_htseq/${SAMPLE}.htseq.tsv \ 
+			${SAMPLE}_csort.bam $gtf
+			done
+		conda deactivate
+
+		fi
+
+echo -e "\n========= Sbatch log =========\n"
+echo -e "\n Current directory: `pwd` \n"
+echo -e "\n `sacct -u $MSUusername -j $SLURM_JOB_ID --format=JobID,JobName,Start,End,Elapsed,NCPUS,ReqMem` \n"
+scontrol show job $SLURM_JOB_ID
+mv $project_dir/code/slurm-$SLURM_JOB_ID* $project_dir/slurms/06_count_htseq.slurm
