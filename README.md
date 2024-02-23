@@ -4,6 +4,8 @@ Coding pipeline for transcriptomics, differential expression analyses for plant 
 ## Install packages with conda
 ```
 conda create --name RNApipeline
+conda activate RNApipeline
+conda install cutadapt   #install all packages listed below
 ```
 cutadapt, fastqc, htseq, hisat2, samtools
 
