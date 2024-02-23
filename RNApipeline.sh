@@ -49,7 +49,7 @@ echo "$jid2: I will check the quality and generate statistics."
 
 # Stripping primers and adapters		
 jid3=`sbatch --dependency=afterok:$jid2 03_primerStrip-cutadapt.sb | cut -d" " -f 4`
-echo "$jid6: I will remove primers and adapters with cutadapt. A subset of reads is generated for double checking." 
+echo "$jid3: I will remove primers and adapters with cutadapt. A subset of reads is generated for double checking." 
 
 echo -e "\n========== Aligning ==========\n"
  
@@ -57,16 +57,14 @@ jid4=`sbatch --dependency=afterok:$jid3 04_AlignReads-hisat.sb | cut -d" " -f 4`
 echo -e "$jid4: I will align reads to a reference."
 
 jid5=`sbatch --dependency=afterok:$jid4 05_sort-samtools.sb | cut -d" " -f 4`
-echo -e "$jid4: I will output only mapped reads and sort."
+echo -e "$jid5: I will output only mapped reads and sort."
 
 
 echo -e "\n========== Counting ==========\n" 
 
 jid6=`sbatch --dependency=afterok:$jid5 06_count-htseq.sb | cut -d" " -f 4`
-echo -e "$jid4: I will count number of reads in genes from a reference annotation."
+echo -e "$jid6: I will count number of reads in genes from a reference annotation."
 
 
 echo -e "\n========== These below are the submitted sbatch... ==========\n" 
 echo -e "\n `sq` \n"
-
-echo -e "\n========== 'This is the end, my friend'... Now, be patient, you have to wait a bit... ==========\n"
