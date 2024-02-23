@@ -2,7 +2,7 @@
 Coding pipeline for transcriptomics, differential expression analyses for plant and fungi
 
 ## Install packages with conda
-| conda create --name RNApipeline |
+|| conda create --name RNApipeline ||
 
 cutadapt, fastqc, htseq, hisat2, samtools
 
