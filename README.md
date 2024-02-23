@@ -25,5 +25,5 @@ Edit the options for cutadapt, hisat, and htseq.
 The strandedness of your RNAseq libraries may need to be changed. Currently set to reverse/second stranded for hisat and htseq for use on Illumina stranded mRNA libraries, TruSeq.
 
 ## Acknowledgments
-Pipeline edited from 
+Pipeline designed and edited from https://github.com/Gian77/Cecilia 
 
