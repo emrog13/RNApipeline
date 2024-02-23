@@ -35,5 +35,5 @@ To run go to project directory with config.yaml and RNApipeline.sh file and run:
 ./RNApipeline.sh
 ```
 ## Acknowledgments
-Pipeline designed and edited from https://github.com/Gian77/Cecilia 
+Pipeline design and code edited from https://github.com/Gian77/Cecilia 
 
