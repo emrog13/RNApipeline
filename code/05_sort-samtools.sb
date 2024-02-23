@@ -26,12 +26,16 @@ else
 	echo -e "\n========== samtools sort and index ==========\n"
 
 		conda activate RNApipeline
-		echo "samtools version: `samtools --version`"	
+		echo "samtools version: `samtools --version`"
+
+		echo "Extract only mapped reads into bam file using -F 4"
 		
 		for i in *.sam; do
   		SAMPLE=$(echo ${i} | sed "s/_trim\.sam//")
 		samtools view -S -b -F 4 -@ $cores ${SAMPLE}_trim.sam > ${SAMPLE}_map.bam
 		done
+
+		echo "Sort by coordinate"
 
 		for i in *.bam; do
 		SAMPLE=$(echo ${i} | sed "s/_map\.bam//")
@@ -40,6 +44,8 @@ else
 		done
 		
 	echo "cd $project_dir/outputs/05_sort_samtools"; cd $project_dir/outputs/05_sort_samtools/
+
+		echo "Indexing"
 		
 		for i in *.bam; do
 		SAMPLE=$(echo ${i} | sed "s/_csort\.bam//")
