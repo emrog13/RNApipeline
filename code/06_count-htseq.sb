@@ -38,8 +38,7 @@ else
 			-a 20 \
 			-t gene \ 
 			-n $cores \
-			-c $project_dir/ouputs/06_count_htseq/${SAMPLE}.htseq.tsv \ 
-			${SAMPLE}_csort.bam $gtf
+			-c ${SAMPLE}.counts.htseq.tsv ${SAMPLE}_csort.bam $gtf
 			done
 		conda deactivate
 
