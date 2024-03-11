@@ -2,7 +2,7 @@
 HPCC coding pipeline for transcriptomics, differential expression analyses for plant and fungi
 
 ```
-gitclone https://github.com/emrog13/RNApipeline/
+git clone https://github.com/emrog13/RNApipeline/
 ```
 
 ## Install packages with conda
