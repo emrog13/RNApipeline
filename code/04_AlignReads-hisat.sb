@@ -49,7 +49,7 @@ else
 				-x B73_index \
 				-1 ${SAMPLE}_R1.fastq \
 				-2 ${SAMPLE}_R2.fastq \
-				-S ${SAMPLE}.sam
+				-S $project_dir/outputs/04_AlignReads-hisat/${SAMPLE}.sam
 				done
 				conda deactivate
 
